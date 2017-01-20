@@ -18,7 +18,7 @@ app.use('/public', express.static(__dirname + '/public'));
 
 // When clients make a GET request to our site, hit them with index.html
 app.get('/', function(req, res){
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/indextest.html');
 });
 
 // This will be a global directory of all the games currently being run
