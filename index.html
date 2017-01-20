@@ -14,10 +14,23 @@
         </style>
     </head>
     <body>
-        <ul id="messages"></ul>
-        <form action="">
-            <input id="m" autocomplete="off" /><button>Send</button>
-        </form>
+		<ul id="messages"></ul>
+		
+		<div>
+			<form action="">
+				<input id="gameID" autocomplete="off" />
+				<button>Join</button>
+			</form>
+			<button id="take">Take</button>
+			<button id="pass">Pass</button>
+		<div>
+
+		<div>
+			<form id="chat" action="">
+				<input id="m" autocomplete="off" />
+				<button>Send</button>
+			</form>
+		<div>
     </body>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
