@@ -24,7 +24,7 @@ function create() {
 		borderRadius: 6,
 		placeHolder: 'GameID',
 	});
-	var joinButton = game.add.button(game.world.centerX, 200, 'button', onJoin, this, 2, 1, 0);
+	var joinButton = game.add.button(game.world.centerX, 200, 'button', onJoin(gameIDField), this, 2, 1, 0);
 	
 	// Before a game has been started
 	var startButton = game.add.button(game.world.centerX - buttonWidth, 300, 'button', onStart, this, 2, 1, 0);
@@ -42,10 +42,12 @@ function onCreate() {
 	socket.emit('create');
 }
 
-function onJoin() {
-	socket.emit('join', {gameID : gameIDField.value});
+function onJoin(gameIDField) {
+	return function() {
+		socket.emit('join', {gameID : gameIDField.value});
+	};
 }
-
+	
 function onStart() {
 	socket.emit('start');
 }
