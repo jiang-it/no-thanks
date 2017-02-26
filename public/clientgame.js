@@ -437,11 +437,13 @@ function drawOpponents() {
 		gameStruct.playerStruct[playerID].cardback = game.add.sprite(flippedCardXOffset + opponentSingleWidth * i, flippedCardY, 'cardback');
 		gameStruct.playerStruct[playerID].cardback.width = cardWidth;
 		gameStruct.playerStruct[playerID].cardback.height = cardHeight;
-		
-		var XX = flippedCardXOffset + shownCardXOffset + cardWidth/2 + opponentSingleWidth * i;
-		gameStruct.playerStruct[playerID].flippedCard = function(card) {
-			_ = drawCard(XX, shownCardY + cardHeight/2, card);
-		};
+		gameStruct.playerStruct[playerID].flippedCard = (function() {
+			var XX = flippedCardXOffset + shownCardXOffset + cardWidth/2 + opponentSingleWidth * i;
+			return function(card) {
+				_ = drawCard(XX, shownCardY + cardHeight/2, card);
+				return;
+			}
+		})();
 		
 		gameStruct.playerStruct[playerID].chips = drawChip(flippedCardXOffset + shownCardXOffset + cardWidth + 10 + chipWidth/2 + opponentSingleWidth * i, shownCardY + cardHeight/2 + 30, 8)
 		
@@ -591,6 +593,7 @@ function ended(msg) {
 }
 
 socket.on('ended', function(msg) {
+	console.log('Got that the game ended');
 	display(msg.results);
 	ended(msg);
 });
