@@ -27,7 +27,8 @@ io.games = {};
 // When a user connects, initialize their socket
 io.on('connection', function(socket){
     console.log('A new user connected' + socket.id);
-
+	socket.emit('id', socket.id);
+	
     socket.on('chat message', function(msg){
         io.emit('chat message', msg);
     });
