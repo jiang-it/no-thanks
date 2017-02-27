@@ -169,7 +169,12 @@ var game = new Phaser.Game(
 function preload() {
 	game.plugins.add(PhaserInput.Plugin);
 	// Load images
-	game.load.spritesheet('button', '/public/button_sprite_sheet.png', buttonWidth, buttonHeight);
+	game.load.spritesheet('leave_game_button', '/public/leave_game_button_sprite_sheet.png', buttonWidth, buttonHeight);
+	game.load.spritesheet('take_card_button', '/public/take_card_button_sprite_sheet.png', buttonWidth, buttonHeight);
+	game.load.spritesheet('pass_card_button', '/public/pass_card_button_sprite_sheet.png', buttonWidth, buttonHeight);
+	game.load.spritesheet('new_room_button', '/public/new_room_button_sprite_sheet.png', buttonWidth, buttonHeight);
+	game.load.spritesheet('join_room_button', '/public/join_room_button_sprite_sheet.png', buttonWidth, buttonHeight);
+	game.load.spritesheet('start_game_button', '/public/start_game_button_sprite_sheet.png', buttonWidth, buttonHeight);
 	game.load.image('cardback', '/public/card_back.png');
 	game.load.image('chip', '/public/chip_blue_top.png')
 }
@@ -198,7 +203,7 @@ function create() {
 function joinGameScreen() {
 	var _ = wipeScreen();
 
-	var createButton = game.add.button(game.world.centerX, 100, 'button', onCreate, this, 2, 1, 0);
+	var createButton = game.add.button(game.world.centerX, 100, 'new_room_button', onCreate, this, 2, 1, 0);
 
 	var gameIDField = game.add.inputField(game.world.centerX - buttonWidth, 200, {
 		font: '40px Arial',
@@ -215,7 +220,7 @@ function joinGameScreen() {
 	var joinButton = game.add.button(
 		game.world.centerX, 
 		200, 
-		'button', 
+		'join_room_button', 
 		onJoin(gameIDField), this, 2, 1, 0
 	);
 		
@@ -228,8 +233,8 @@ function joinGameScreen() {
 function startGameScreen(gameID) {
 	var _ = wipeScreen();
 
-	var startButton = game.add.button(game.world.centerX - buttonWidth, 300, 'button', onStart, this, 2, 1, 0);
-    var leaveButton = game.add.button(game.world.centerX, 300, 'button', onLeave, this, 2, 1, 0);
+	var startButton = game.add.button(game.world.centerX - buttonWidth, 300, 'start_game_button', onStart, this, 2, 1, 0);
+    var leaveButton = game.add.button(game.world.centerX, 300, 'leave_game_button', onLeave, this, 2, 1, 0);
 	
 	var style = { font: "20px Arial", fill: "#ffffff", boundsAlignH: "right", boundsAlignV: "middle" };
     var gameIDText = game.add.text(0, 0, "GameID: " + gameID.toString(), style);
@@ -509,8 +514,8 @@ function displayTurn(playerID, currentCard) {
 	if (playerID == id) {
 		gameStruct.turnText.text = "It is your turn now!";
 		// Display buttons		
-		gameStruct.takeButton = game.add.button(100, currentCardYC - buttonHeight, 'button', onTake, this, 2, 1, 0);
-		gameStruct.passButton = game.add.button(100, currentCardYC , 'button', onPass, this, 2, 1, 0);
+		gameStruct.takeButton = game.add.button(100, currentCardYC - buttonHeight, 'take_card_button', onTake, this, 2, 1, 0);
+		gameStruct.passButton = game.add.button(100, currentCardYC , 'pass_card_button', onPass, this, 2, 1, 0);
 	} else {
 		gameStruct.turnText.text = "It is " + playerID.toString() + "'s turn";
 		// Destroy buttons
