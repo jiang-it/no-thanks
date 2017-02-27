@@ -5,6 +5,7 @@
  *         gameID : string
  *         playerIDs : string array
  *         inProgress : bool
+ *         finished : bool
  *         game = {
  *             playerOrder : string array
  *             currentDeck : int array
@@ -88,6 +89,7 @@ exports.initGame = function(io, gameSocket) {
 			// TODO: password : false,
 			playerIDs : [gameSocket.id],
 			inProgress : false,
+			finished : false,
 		};
 		// Set the user to be in a game room
 		gameSocket.gameID = gameID;
@@ -166,6 +168,12 @@ exports.initGame = function(io, gameSocket) {
 			problem('Game has already started');
 			return;
 		}
+		// Uncomment when pushing to production
+		// if (io.games[gameID].playerIDs.length < 2) {
+			// problem('Only one person in game');
+			// return;
+		// }
+		
 		
 		// Set the struct to start
 		io.games[gameID].inProgress = true;
@@ -215,6 +223,7 @@ exports.initGame = function(io, gameSocket) {
 			// The user is not in a game
 			// If the game has not started
 			// It is not the user's turn
+			// Game is finished
 		if (!gameID) {
 			problem('Not in a game. Create a new game to start playing.');
 			return;
@@ -226,6 +235,10 @@ exports.initGame = function(io, gameSocket) {
 		}
 		if (!io.games[gameID].inProgress) {
 			problem('Start the game in order to play');
+			return;
+		}
+		if (io.games[gameID].finished) {
+			problem('The Game is Finished');
 			return;
 		}
 
@@ -267,6 +280,7 @@ exports.initGame = function(io, gameSocket) {
 				bid : game.currentBid
 			});
 		} else {
+			io.games[gameID].finished = true;
 			results = [];
 			for (var i = 0; i < game.playerOrder.length; i++) {
 				playerID = game.playerOrder[i];
@@ -277,6 +291,7 @@ exports.initGame = function(io, gameSocket) {
 				};
 			}
 			console.log(results);
+			
 			io.sockets.in(gameID).emit('ended', {
 				results : results
 			});
@@ -293,6 +308,7 @@ exports.initGame = function(io, gameSocket) {
 			// The game has not started
 			// It is not the user's turn
 			// The user does not have enough money to bid
+			// The game is finished
 		if (!gameID) {
 			problem('Not in a game. Create a new game to start playing.');
 			return;
@@ -314,6 +330,11 @@ exports.initGame = function(io, gameSocket) {
 			problem('Not enough money to pass. You must take the card.');
 			return;
 		}
+		if (io.games[gameID].finished) {
+			problem('The Game is Finished');
+			return;
+		}
+
 		// Otherwise
 			// Take one money from the user and add it to the current bid
 		game[gameSocket.id].coins -= 1;
