@@ -499,7 +499,14 @@ socket.on('started', function(msg) {
 	/**
 	 * Game screen should display everyone's money, ids, card count, card back
 	 */
-	playersInGame = msg.playerOrder;
+	// Organize the player order correctly
+	var player_index = msg.playerOrder.indexOf(id);
+	var before = msg.playerOrder.slice(0, player_index);
+	var after = msg.playerOrder.slice(player_index);
+	var order = after.concat(before);
+	
+	playersInGame = order;
+	
 	gameScreen();
 });
 
