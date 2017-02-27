@@ -430,14 +430,18 @@ function drawOpponents() {
 		}
 	}
 	
-	var opponentSingleWidth = gameWidth / opponents.length;
+	if (opponents.length < 2) {
+		var opponentSingleWidth = 350;
+	} else {
+		var opponentSingleWidth = gameWidth / opponents.length;
+	}
 	
 	for (var i = 0; i < opponents.length; i++) {
 		var playerID = opponents[i];
 		// Player ID Texts
 		var style = { font: "20px Arial", fill: "#ffffff", boundsAlignH: "center", boundsAlignV: "middle" };
 		gameStruct.playerStruct[playerID].text = game.add.text(0, 0, playerID, style);
-		gameStruct.playerStruct[playerID].text.setTextBounds(opponentSingleWidth * i, opponentBlockY, opponentSingleWidth, opponentIDHeight);
+		gameStruct.playerStruct[playerID].text.setTextBounds(opponentSingleWidth * i, opponentBlockY, 350, opponentIDHeight);
 		
 		gameStruct.playerStruct[playerID].cardback = game.add.sprite(flippedCardXOffset + opponentSingleWidth * i, flippedCardY, 'cardback');
 		gameStruct.playerStruct[playerID].cardback.width = cardWidth;
