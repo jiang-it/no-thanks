@@ -112,7 +112,7 @@ exports.initGame = function(io, gameSocket) {
 			// The gameID doesn't exist
 			// The user is currently in a different game
 			// The game has already started
-			// We've hit a maximum limit to the game size (say 5?)
+			// We've hit a maximum limit to the game size (say 6?)
 		if ((!msg) || (!msg.gameID)) {
 			problem('No gameID specified');
 			return;
@@ -130,6 +130,10 @@ exports.initGame = function(io, gameSocket) {
 		}
 		if (io.games[gameID].inProgress) {
 			problem('Game has already started');
+			return;
+		}
+		if (io.games[gameID].playerIDs.length >= 6) {
+			problem('Game is already filled to max (6)');
 			return;
 		}
 
