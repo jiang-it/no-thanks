@@ -432,9 +432,41 @@ exports.initGame = function(io, gameSocket) {
 	}
     gameSocket.on('leave', leaveGame);
 
-    gameSocket.on('disconnect', function(){
-        console.log('User disconnected: ' + gameSocket.id);
-    });
+	// MUST HANDLE ALL CASES
+	function disconnect() {
+		console.log('User ' + gameSocket.id + ' has disconnected');
+
+		gameID = gameSocket.gameID;
+		if (!gameID) {
+			// If the user is not in a game, we don't have to do anything
+			return;
+		}
+		if (!io.games[gameID]) {
+			// That's buggy but not game breaking. 
+			// We have a gameID but its not recorded
+			console.log('Game not found, abort abort');
+			console.log(io.games);
+			console.log('GameID not Found: ' + gameID.toString())
+			return;
+		}
+		if (io.games[gameID].finished) {
+			// Figure out what we want to do after a games done.
+			_ = leaveGame();
+			// Test to see what the other players in game do after game ends 
+			// and a player leaves
+			return;
+		}
+		if (io.games[gameID].inProgress) {
+			// Default to ending the game and displaying scores
+			console.log(io.games);
+			_ = endGame();
+			_ = leaveGame();
+			console.log(io.games);
+			return;
+		}
+		
+	}
+    gameSocket.on('disconnect', disconnect);
 }
 
 /**
