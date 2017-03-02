@@ -92,7 +92,6 @@ var yourChipYC = yourChipTextY + yourChipTextHeight + chipHeight/2;
 /** 
  * Global variables for the game itself
  */
-var displayText; // For notifications
 
 // While in the waiting screen
 var playersInGame = [];
@@ -186,11 +185,7 @@ function create() {
 	var style = { font: "50px Arial", fill: "#ffffff", boundsAlignH: "center", boundsAlignV: "middle" };
     var titleText = game.add.text(0, 0, "No Thanks! The Card Game", style);
 	titleText.setTextBounds(titleBlockX, titleBlockY, titleBlockWidth, titleBlockHeight);
-	
-	var style = { font: "32px Arial", fill: "#b20000", boundsAlignH: "center", boundsAlignV: "middle" };    	
-	displayText = game.add.text(0, 0, '', style);
-	displayText.setTextBounds(0, 0, game.width, game.height);
-	
+		
 	/**
 	 * Go to the Join Screen
 	 */
@@ -352,11 +347,32 @@ function onTake() {
 
 /**
  *
- */
+ */		
+var displayTextGroup;
+var displayText; // For notifications
+var displayTextTimer;
+function timerCallback() {
+	displayText.destroy(); 
+	displayText = null;
+	displayTextGroup.destroy();
+	displayTextGroup = null;
+}
+
 function display(string) {
+	if (displayText) {
+		displayText.text = displayText.text + '\n' + string;
+		_ = clearTimeout(displayTextTimer);
+		displayTextTimer = setTimeout(timerCallback, 2000);
+		game.world.bringToTop(displayText);
+	} else {
+		displayTextGroup = game.add.group();
+		var style = { font: "32px Arial", fill: "#b20000", backgroundColor: "#f86969" , boundsAlignH: "center", boundsAlignV: "middle" };    	
+		displayText = game.add.text(0, 0, string, style);
+		displayText.setTextBounds(0, 0, game.width, game.height);
+		displayTextTimer = setTimeout(timerCallback, 2000);
+		game.world.bringToTop(displayText);
+	}
 	// $('#messages').append($('<li>').text(string));
-	displayText.text = displayText.text + '\n' + string;
-	setTimeout(function() {displayText.text = '';}, 2000);
 	return;
 }
 
@@ -498,8 +514,6 @@ function gameScreen() {
 }
 
 socket.on('started', function(msg) {
-	display('The game has started!');
-	display('Player order is: ' + msg.playerOrder.toString());
 	/**
 	 * Game screen should display everyone's money, ids, card count, card back
 	 */
@@ -512,6 +526,9 @@ socket.on('started', function(msg) {
 	playersInGame = order;
 	
 	gameScreen();
+	
+	display('The game has started!');
+	display('Player order is: ' + msg.playerOrder.toString());
 });
 
 function displayTurn(playerID, currentCard) {
@@ -543,12 +560,12 @@ function displayTurn(playerID, currentCard) {
 }
 
 socket.on('turn', function(msg) {
-	display('It is ' + msg.playerID + '\'s turn');
-	display('Current card is ' + msg.card.toString() + ' with bid ' + msg.bid.toString());
 	/**
 	 * Game screen should display card 
 	 */
 	displayTurn(msg.playerID, msg.card);
+	display('It is ' + msg.playerID + '\'s turn');
+	display('Current card is ' + msg.card.toString() + ' with bid ' + msg.bid.toString());
 });
 
 function displayHand() {
@@ -581,8 +598,8 @@ function taken(playerID, cardTaken, bidTaken) {
 }
 
 socket.on('taken', function(msg) {
-	display(msg.playerID + ' took ' + msg.card.toString() + ' and ' + msg.bid.toString() + ' moneys');
 	taken(msg.playerID, msg.card, msg.bid);
+	display(msg.playerID + ' took ' + msg.card.toString() + ' and ' + msg.bid.toString() + ' moneys');
 });
 
 function passed(playerID) {
@@ -599,8 +616,8 @@ function passed(playerID) {
 }
 
 socket.on('passed', function(msg) {
-	display(msg.playerID + ' passed ' + msg.card.toString());	
 	passed(msg.playerID);
+	display(msg.playerID + ' passed ' + msg.card.toString());
 });
 
 function ended(msg) {
@@ -610,6 +627,6 @@ function ended(msg) {
 
 socket.on('ended', function(msg) {
 	console.log('Got that the game ended');
-	display(msg.results);
 	ended(msg);
+	display(msg.results);
 });
