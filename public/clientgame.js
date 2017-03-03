@@ -100,7 +100,7 @@ var playerIDText;
 
 function updatePlayerText() {
 	var text = 'Players In Lobby:';
-	console.log(playersInGame);
+	// console.log(playersInGame);
 	for (var i = 0; i < playersInGame.length; i++) {
 		text = text + '\n' + playersInGame[i].toString();
 	}
@@ -114,14 +114,14 @@ function addPlayer(playerID) {
 }
 
 function removePlayer(playerID) {	
-	console.log(playersInGame);
-	console.log('removing ' + playerID);
+	// console.log(playersInGame);
+	// console.log('removing ' + playerID);
 	var index = playersInGame.indexOf(playerID);
-	console.log(index);
+	// console.log(index);
 	if (index > -1) {
 		playersInGame.splice(index, 1);
 	} else {
-		console.log('WTF');
+		// console.log('WTF');
 	}
 	updatePlayerText();
 }
@@ -383,6 +383,7 @@ socket.on('id', function(msg) {
 	id = msg;
 });
 
+// This isn't really implemented lmao
 socket.on('chat message', function(msg){
 	display(msg);
 });
@@ -392,14 +393,14 @@ socket.on('problem', function(msg) {
 });
 
 socket.on('created', function(msg) {
-    console.log(msg);
-	display('Joining game room. GameID: ' + msg.gameID);
+    // console.log(msg);
+	// display('Joining game room. GameID: ' + msg.gameID);
 });
 
 var gameID;
 socket.on('joined', function(msg) {
-	display('Joined game room: ' + msg.gameID);
-	display('Players in room: ' + msg.playerIDs.toString());
+	// display('Joined game room: ' + msg.gameID);
+	// display('Players in room: ' + msg.playerIDs.toString());
 	gameID = msg.gameID;
 	startGameScreen();
 	for (var i = 0; i < msg.playerIDs.length; i++) {
@@ -408,7 +409,7 @@ socket.on('joined', function(msg) {
 });
 
 socket.on('newplayer', function(msg) {
-	display(msg.playerID + ' has joined the game room');
+	// display(msg.playerID + ' has joined the game room');
 	addPlayer(msg.playerID);
 });
 
@@ -418,7 +419,7 @@ socket.on('playerleft', function(msg) {
 });
 
 socket.on('exited', function(msg) {
-	display('Left the game');
+	// display('Left the game');
 	playersInGame = [];
 	joinGameScreen();
 });
@@ -535,8 +536,8 @@ socket.on('started', function(msg) {
 	
 	gameScreen();
 	
-	display('The game has started!');
-	display('Player order is: ' + msg.playerOrder.toString());
+	// display('The game has started!');
+	// display('Player order is: ' + msg.playerOrder.toString());
 });
 
 function displayTurn(playerID, currentCard) {
@@ -572,8 +573,8 @@ socket.on('turn', function(msg) {
 	 * Game screen should display card 
 	 */
 	displayTurn(msg.playerID, msg.card);
-	display('It is ' + msg.playerID + '\'s turn');
-	display('Current card is ' + msg.card.toString() + ' with bid ' + msg.bid.toString());
+	// display('It is ' + msg.playerID + '\'s turn');
+	// display('Current card is ' + msg.card.toString() + ' with bid ' + msg.bid.toString());
 });
 
 function displayHand() {
@@ -608,7 +609,7 @@ function taken(playerID, cardTaken, bidTaken) {
 
 socket.on('taken', function(msg) {
 	taken(msg.playerID, msg.card, msg.bid);
-	display(msg.playerID + ' took ' + msg.card.toString() + ' and ' + msg.bid.toString() + ' moneys');
+	// display(msg.playerID + ' took ' + msg.card.toString() + ' and ' + msg.bid.toString() + ' moneys');
 });
 
 function passed(playerID) {
@@ -625,7 +626,7 @@ function passed(playerID) {
 
 socket.on('passed', function(msg) {
 	passed(msg.playerID);
-	display(msg.playerID + ' passed ' + msg.card.toString());
+	// display(msg.playerID + ' passed ' + msg.card.toString());
 });
 
 function ended(msg) {
@@ -696,9 +697,9 @@ function ended(msg) {
 }
 
 socket.on('ended', function(msg) {
-	console.log('Got that the game ended');
+	// console.log('Got that the game ended');
 	ended(msg);
-	display('Game OVER!');
-	display(msg.results);
-	console.log(msg.results);
+	// display('Game OVER!');
+	// display(msg.results);
+	// console.log(msg.results);
 });

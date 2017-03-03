@@ -68,7 +68,7 @@ exports.initGame = function(io, gameSocket) {
     // createRoom is called when the player tries to create 
 	// a new game room. Generate a random code and return it back to the user
 	function createRoom(msg) {
-		console.log('User ' + gameSocket.id + ' is trying to create a game');
+		// console.log('User ' + gameSocket.id + ' is trying to create a game');
 		
 		// Throws an error if
 			// User is already in a game
@@ -117,7 +117,7 @@ exports.initGame = function(io, gameSocket) {
 			problem('No gameID specified');
 			return;
 		}
-		console.log('User ' + gameSocket.id + ' trying to join ' + msg.gameID);
+		// console.log('User ' + gameSocket.id + ' trying to join ' + msg.gameID);
 		
 		gameID = msg.gameID;
 		if (!io.games[gameID]) {
@@ -152,7 +152,7 @@ exports.initGame = function(io, gameSocket) {
 
     // startGame is called when the user tries the game they are in
 	function startGame(msg) {
-		console.log('User ' + gameSocket.id + ' trying to start game');
+		// console.log('User ' + gameSocket.id + ' trying to start game');
 		// Figure out which game room the socket is currently in
 		gameID = gameSocket.gameID;
 		// Throw error if
@@ -165,7 +165,7 @@ exports.initGame = function(io, gameSocket) {
 		if (!io.games[gameID]) {
 			// Server side error!
 			problem('Server is exploding');
-			console.log('Horrible Error, gameId not found in games list');
+			// console.log('Horrible Error, gameId not found in games list');
 			return;
 		}
 		if (io.games[gameID].inProgress) {
@@ -173,10 +173,10 @@ exports.initGame = function(io, gameSocket) {
 			return;
 		}
 		// Uncomment when pushing to production
-		// if (io.games[gameID].playerIDs.length < 2) {
-			// problem('Only one person in game');
-			// return;
-		// }
+		if (io.games[gameID].playerIDs.length < 2) {
+			problem('Only one person in game');
+			return;
+		}
 		
 		// Set the struct to start
 		io.games[gameID].finished = false;
@@ -221,7 +221,7 @@ exports.initGame = function(io, gameSocket) {
 
     // When the user takes a card
 	function takeCard(msg) {
-		console.log('User ' + gameSocket.id + ' trying to take a card');
+		// console.log('User ' + gameSocket.id + ' trying to take a card');
 		gameID = gameSocket.gameID;
 		// Throw an error if
 			// The user is not in a game
@@ -233,7 +233,7 @@ exports.initGame = function(io, gameSocket) {
 			return;
 		}
 		if (!io.games[gameID]) {
-			console.log('Game not found, abort abort');
+			// console.log('Game not found, abort abort');
 			problem('Server error in takeCard')
 			return;
 		}
@@ -295,7 +295,7 @@ exports.initGame = function(io, gameSocket) {
 					score : scoreHand(game[playerID].hand, game[playerID].coins)
 				};
 			}
-			console.log(results);
+			// console.log(results);
 			
 			io.sockets.in(gameID).emit('ended', {
 				results : results
@@ -306,7 +306,7 @@ exports.initGame = function(io, gameSocket) {
 
     // When the user passes a card
 	function passCard(msg) {
-		console.log('User ' + gameSocket.id + ' trying to pass a card');
+		// console.log('User ' + gameSocket.id + ' trying to pass a card');
 		gameID = gameSocket.gameID;
 		// Throw an error if
 			// The user is not in a game
@@ -319,7 +319,7 @@ exports.initGame = function(io, gameSocket) {
 			return;
 		}
 		if (!io.games[gameID]) {
-			console.log('Game not found, abort abort');
+			// console.log('Game not found, abort abort');
 			return;
 		}
 		if (!io.games[gameID].inProgress) {
@@ -360,7 +360,7 @@ exports.initGame = function(io, gameSocket) {
     gameSocket.on('pass', passCard);
 	
 	function endGame(msg) {
-		console.log('User ' + gameSocket.id + ' trying to end the game');
+		// console.log('User ' + gameSocket.id + ' trying to end the game');
 		// Throw an error if
 			// The user is not in a game
 			// The game has not started
@@ -370,7 +370,7 @@ exports.initGame = function(io, gameSocket) {
 			return;
 		}
 		if (!io.games[gameID]) {
-			console.log('Game not found, abort abort');
+			// console.log('Game not found, abort abort');
 			return;
 		}
 		if (!io.games[gameID].inProgress) {
@@ -389,7 +389,7 @@ exports.initGame = function(io, gameSocket) {
 				score : scoreHand(game[playerID].hand, game[playerID].coins)
 			};
 		}
-		console.log(results);
+		// console.log(results);
 		io.sockets.in(gameID).emit('ended', {
 			results : results
 		});
@@ -397,7 +397,7 @@ exports.initGame = function(io, gameSocket) {
     gameSocket.on('end', endGame);
 
 	function leaveGame(msg) {
-		console.log('User ' + gameSocket.id + ' trying to leave the game room');
+		// console.log('User ' + gameSocket.id + ' trying to leave the game room');
 		// Throw an error if 
 			// The user is not in a game
 			// The game is in progress
@@ -407,7 +407,7 @@ exports.initGame = function(io, gameSocket) {
 			return;
 		}
 		if (!io.games[gameID]) {
-			console.log('Game not found, abort abort');
+			// console.log('Game not found, abort abort');
 			return;
 		}
 		if (io.games[gameID].inProgress) {
@@ -435,7 +435,7 @@ exports.initGame = function(io, gameSocket) {
 
 	// MUST HANDLE ALL CASES
 	function disconnect() {
-		console.log('User ' + gameSocket.id + ' has disconnected');
+		// console.log('User ' + gameSocket.id + ' has disconnected');
 
 		gameID = gameSocket.gameID;
 		if (!gameID) {
@@ -445,9 +445,9 @@ exports.initGame = function(io, gameSocket) {
 		if (!io.games[gameID]) {
 			// That's buggy but not game breaking. 
 			// We have a gameID but its not recorded
-			console.log('Game not found, abort abort');
-			console.log(io.games);
-			console.log('GameID not Found: ' + gameID.toString())
+			// console.log('Game not found, abort abort');
+			// console.log(io.games);
+			// console.log('GameID not Found: ' + gameID.toString())
 			return;
 		}
 		if (io.games[gameID].finished) {
@@ -459,10 +459,10 @@ exports.initGame = function(io, gameSocket) {
 		}
 		if (io.games[gameID].inProgress) {
 			// Default to ending the game and displaying scores
-			console.log(io.games);
+			// console.log(io.games);
 			_ = endGame();
 			_ = leaveGame();
-			console.log(io.games);
+			// console.log(io.games);
 			return;
 		}
 		
@@ -503,13 +503,13 @@ function shuffleFullDeck() {
 
 function scoreHand(hand, moneys) {
 	hand.sort(function(a, b){return parseInt(a)-parseInt(b)});
-	console.log(hand);
+	// console.log(hand);
 	score = hand[0];
 	for (var i = 1; i < hand.length; i++) {
 		if (hand[i-1] != (hand[i] - 1)) {
 			score += hand[i];
 		}
 	}
-	console.log(score);
+	// console.log(score);
 	return score - moneys;
 }
