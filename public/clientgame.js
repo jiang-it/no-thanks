@@ -680,7 +680,7 @@ function ended(msg) {
 	_ = startGameScreen();
 	_ = updatePlayerText();
 	// Display scores
-	var text = "Lower Score is Better:";
+	var text = "Game ended! \n Lower Score is Better:";
 	for (var i = 0; i < msg.results.length; i++) {
 		if (msg.results[i].playerID == id) {
 			text = text + "\n" + "You" + " Scored " + msg.results[i].score.toString();
