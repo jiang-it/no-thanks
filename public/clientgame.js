@@ -100,6 +100,7 @@ var playerIDText;
 
 function updatePlayerText() {
 	var text = 'Players In Lobby:';
+	console.log(playersInGame);
 	for (var i = 0; i < playersInGame.length; i++) {
 		text = text + '\n' + playersInGame[i].toString();
 	}
@@ -132,7 +133,6 @@ var players = [];
 var currentCard;
 var currentBid;
 var playerBid;
-
 
 /**
  * Items to destroy from the screen
@@ -225,7 +225,7 @@ function joinGameScreen() {
 	return;
 }
 
-function startGameScreen(gameID) {
+function startGameScreen() {
 	var _ = wipeScreen();
 
 	var startButton = game.add.button(game.world.centerX - buttonWidth, 300, 'start_game_button', onStart, this, 2, 1, 0);
@@ -348,14 +348,11 @@ function onTake() {
 /**
  *
  */		
-var displayTextGroup;
 var displayText; // For notifications
 var displayTextTimer;
 function timerCallback() {
 	displayText.destroy(); 
 	displayText = null;
-	displayTextGroup.destroy();
-	displayTextGroup = null;
 }
 
 function display(string) {
@@ -365,7 +362,6 @@ function display(string) {
 		displayTextTimer = setTimeout(timerCallback, 2000);
 		game.world.bringToTop(displayText);
 	} else {
-		displayTextGroup = game.add.group();
 		var style = { font: "32px Arial", fill: "#b20000", backgroundColor: "#f86969" , boundsAlignH: "center", boundsAlignV: "middle" };    	
 		displayText = game.add.text(0, 0, string, style);
 		displayText.setTextBounds(0, 0, game.width, game.height);
@@ -400,10 +396,12 @@ socket.on('created', function(msg) {
 	display('Joining game room. GameID: ' + msg.gameID);
 });
 
+var gameID;
 socket.on('joined', function(msg) {
 	display('Joined game room: ' + msg.gameID);
 	display('Players in room: ' + msg.playerIDs.toString());
-	startGameScreen(msg.gameID);
+	gameID = msg.gameID;
+	startGameScreen();
 	for (var i = 0; i < msg.playerIDs.length; i++) {
 		addPlayer(msg.playerIDs[i]);
 	}
@@ -463,9 +461,13 @@ function drawOpponents() {
 		gameStruct.playerStruct[playerID].cardback.width = cardWidth;
 		gameStruct.playerStruct[playerID].cardback.height = cardHeight;
 		gameStruct.playerStruct[playerID].flippedCard = (function() {
+			var thisID = playerID
 			var XX = flippedCardXOffset + shownCardXOffset + cardWidth/2 + opponentSingleWidth * i;
 			return function(card) {
-				_ = drawCard(XX, shownCardY + cardHeight/2, card);
+				if (gameStruct.playerStruct[thisID].flippedC) {
+					gameStruct.playerStruct[thisID].flippedC.destroy();
+				}
+				this.flippedC = drawCard(XX, shownCardY + cardHeight/2, card);
 				return;
 			}
 		})();
@@ -499,8 +501,8 @@ function gameScreen() {
     gameStruct.centerChipText = game.add.text(0, 0, "Current Pot:", style);
 	gameStruct.centerChipText.setTextBounds(currentChipTextX, currentChipTextY, currentChipTextWidth, currentChipTextHeight);
 
-    var cardText = game.add.text(0, 0, "Current Card:", style);
-	cardText.setTextBounds(currentCardTextX, currentCardTextY, currentCardTextWidth, currentCardTextHeight);
+    gameStruct.centerCardText = game.add.text(0, 0, "Current Card:", style);
+	gameStruct.centerCardText.setTextBounds(currentCardTextX, currentCardTextY, currentCardTextWidth, currentCardTextHeight);
 	
 	var style = { font: "30px Arial", fill: "#ffffff", boundsAlignH: "center", boundsAlignV: "middle" };
     gameStruct.playerChipText = game.add.text(0, 0, "Your Chips:", style);
@@ -595,6 +597,7 @@ function taken(playerID, cardTaken, bidTaken) {
 	}
 	gameStruct.centerMoney = 0;
 	gameStruct.centerChip.updateAmount(0);
+	gameStruct.currentCard.destroy();
 }
 
 socket.on('taken', function(msg) {
@@ -612,7 +615,6 @@ function passed(playerID) {
 	}
 	gameStruct.centerMoney += 1;
 	gameStruct.centerChip.updateAmount(gameStruct.centerMoney);
-	
 }
 
 socket.on('passed', function(msg) {
@@ -621,12 +623,76 @@ socket.on('passed', function(msg) {
 });
 
 function ended(msg) {
-	display('Game OVER!');
 	// WIPE EVERYTHING
+	if (gameStruct.takeButton) {
+		gameStruct.takeButton.destroy();
+	}
+	if (gameStruct.passButton) {
+		gameStruct.passButton.destroy();
+	}
+	if (gameStruct.turnText) {
+		gameStruct.turnText.destroy();
+	}
+	if (gameStruct.centerChip) {
+		gameStruct.centerChip.destroy();
+	}
+	if (gameStruct.currentCard) {
+		gameStruct.currentCard.destroy();
+	}
+	if (gameStruct.centerCardText) {
+		gameStruct.centerCardText.destroy();
+	}
+	if (gameStruct.centerChipText) {
+		gameStruct.centerChipText.destroy();
+	}
+	if (gameStruct.playerChipText){
+		gameStruct.playerChipText.destroy();
+	}
+	
+	for (var i = 0; i < playersInGame.length; i++) {
+		var playerID = playersInGame[i];
+		if (playerID != id) {
+			if (gameStruct.playerStruct[playerID].text) {
+				gameStruct.playerStruct[playerID].text.destroy();
+			}
+			if (gameStruct.playerStruct[playerID].cardback) {
+				gameStruct.playerStruct[playerID].cardback.destroy();
+			}
+			if (gameStruct.playerStruct[playerID].flippedC) {
+				gameStruct.playerStruct[playerID].flippedC.destroy();
+			}
+			if (gameStruct.playerStruct[playerID].chips) {
+				gameStruct.playerStruct[playerID].chips.destroy();
+			}
+			if (gameStruct.playerStruct[playerID].cardText) {
+				gameStruct.playerStruct[playerID].cardText.destroy();
+			}
+		}
+	}
+	
+	// Redraw the start
+	_ = startGameScreen();
+	_ = updatePlayerText();
+	// Display scores
+	var text = "Lower Score is Better:";
+	for (var i = 0; i < msg.results.length; i++) {
+		if (msg.results[i].playerID == id) {
+			text = text + "\n" + "You" + " Scored " + msg.results[i].score.toString();
+		} else {
+			text = text + "\n" + msg.results[i].playerID + " Scored " + msg.results[i].score.toString();
+		}
+	}
+	var style = { font: "32px Arial", fill: "#ffffff", boundsAlignH: "center", boundsAlignV: "middle" };
+    var scoreText = game.add.text(0, 0, text, style);
+	scoreText.setTextBounds(titleBlockX, 300, titleBlockWidth, 300);
+	toDestroy.push(scoreText);
+	return;
 }
 
 socket.on('ended', function(msg) {
 	console.log('Got that the game ended');
 	ended(msg);
+	display('Game OVER!');
 	display(msg.results);
+	console.log(msg.results);
 });
