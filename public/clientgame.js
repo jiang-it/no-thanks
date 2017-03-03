@@ -524,8 +524,14 @@ socket.on('started', function(msg) {
 	var before = msg.playerOrder.slice(0, player_index);
 	var after = msg.playerOrder.slice(player_index);
 	var order = after.concat(before);
-	
 	playersInGame = order;
+	
+	gameStruct = {
+		playerStruct : {},
+		playerHand : [],
+		playerMoney : 8,
+		centerMoney : 0,
+	};
 	
 	gameScreen();
 	

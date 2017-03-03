@@ -178,8 +178,8 @@ exports.initGame = function(io, gameSocket) {
 			// return;
 		// }
 		
-		
 		// Set the struct to start
+		io.games[gameID].finished = false;
 		io.games[gameID].inProgress = true;
 
 		// Then set up that game struct
@@ -285,6 +285,7 @@ exports.initGame = function(io, gameSocket) {
 			});
 		} else {
 			io.games[gameID].finished = true;
+			io.games[gameID].inProgress = false;
 			results = [];
 			for (var i = 0; i < game.playerOrder.length; i++) {
 				playerID = game.playerOrder[i];
