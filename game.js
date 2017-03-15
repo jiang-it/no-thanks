@@ -1,5 +1,6 @@
 /**
- * Simple change
+ * game.js
+ * This is the client's game implementation
  */
 
 /**
