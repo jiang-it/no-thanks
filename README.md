@@ -1,6 +1,6 @@
 # No Thanks! (Card Game)
 
-An online multiplayer version of No Thanks!, the simple, elegant card game designed by Thorsten Gimmler and published by Amigo Spiele. 
+An online multiplayer version of No Thanks!, the simple, elegant card game designed by Thorsten Gimmler and published by Amigo Spiele. Powered by Node.js, Socket.io, and Phaser.io. [Demo](https://evening-river-12851.herokuapp.com/)
 
 ## Rules and Gameplay
 
@@ -14,11 +14,10 @@ The goal of the game is to reduce the number of points you take. The player with
 
 Every player starts with 0 cards in hand and a fixed number of chips. The deck is shuffled and a random subset of cards is removed. The top card is flipped over. 
 
-### On a player's turn
+### On a player's turn:
 
 On each player's turn, that player may take or pass the top card. If a player passes the card, he/she must put a chip on the top card. If a player takes the top card, he/she gets all of the chips placed on the top card. The next card is flipped over. If a player has no chips, he/she must take the top card.
 
 ### The game ends:
 
 When there are no more cards in the deck.
-
