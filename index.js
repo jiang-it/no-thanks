@@ -18,13 +18,10 @@ app.use('/public', express.static(__dirname + '/public'));
 
 // When clients make a GET request to our site, hit them with index.html
 app.get('/', function(req, res){
-    res.sendFile(__dirname + '/indextest.html');
+    res.sendFile(__dirname + '/index.html');
 });
 
-// This will be a global directory of all the games currently being run
-io.games = {};
-
-// When a user connects, initialize their socket
+// Set a classback for when a user connects
 io.on('connection', function(socket){
     console.log('A new user connected' + socket.id);
 	socket.emit('id', socket.id);
@@ -37,9 +34,11 @@ io.on('connection', function(socket){
         console.log('user disconnected');
     });
 
-    // Initialize the game
     nothanks.initGame(io, socket);
 });
+
+// This will be a global directory of all the games currently being run
+io.games = {};
 
 // Start listening on our port
 http.listen(port, function(){

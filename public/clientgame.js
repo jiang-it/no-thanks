@@ -1,8 +1,8 @@
 var socket = io();
 var id;
 
-/**
- * Size Constants
+/** 
+ * Global variables for the game itself
  */
 var gameWidth = 1280;
 var gameWidthC = gameWidth / 2;
@@ -89,9 +89,6 @@ var yourChipTextY = ourHandBlockYC - (chipHeight + yourChipTextHeight)/2;
 var yourChipXC = gameWidth - (yourChipTextWidth/2);
 var yourChipYC = yourChipTextY + yourChipTextHeight + chipHeight/2;
 
-/** 
- * Global variables for the game itself
- */
 
 // While in the waiting screen
 var playersInGame = [];
@@ -100,7 +97,6 @@ var playerIDText;
 
 function updatePlayerText() {
 	var text = 'Players In Lobby:';
-	// console.log(playersInGame);
 	for (var i = 0; i < playersInGame.length; i++) {
 		text = text + '\n' + playersInGame[i].toString();
 	}
@@ -114,10 +110,7 @@ function addPlayer(playerID) {
 }
 
 function removePlayer(playerID) {	
-	// console.log(playersInGame);
-	// console.log('removing ' + playerID);
 	var index = playersInGame.indexOf(playerID);
-	// console.log(index);
 	if (index > -1) {
 		playersInGame.splice(index, 1);
 	} else {
@@ -176,6 +169,10 @@ function preload() {
 	game.load.spritesheet('start_game_button', '/public/start_game_button_sprite_sheet.png', buttonWidth, buttonHeight);
 	game.load.image('cardback', '/public/card_back.png');
 	game.load.image('chip', '/public/chip_blue_top.png')
+    // Scale the game to window size
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
 }
 
 function create() {
@@ -429,12 +426,6 @@ var gameStruct = {
 	playerHand : [],
 	playerMoney : 8,
 	centerMoney : 0,
-	/**
-	passButton = null,
-	failButton = null,
-	centerChip = null;
-	centerChipText = null;
-	*/
 };
 
 function drawOpponents() {
@@ -535,9 +526,6 @@ socket.on('started', function(msg) {
 	};
 	
 	gameScreen();
-	
-	// display('The game has started!');
-	// display('Player order is: ' + msg.playerOrder.toString());
 });
 
 function displayTurn(playerID, currentCard) {
@@ -573,8 +561,6 @@ socket.on('turn', function(msg) {
 	 * Game screen should display card 
 	 */
 	displayTurn(msg.playerID, msg.card);
-	// display('It is ' + msg.playerID + '\'s turn');
-	// display('Current card is ' + msg.card.toString() + ' with bid ' + msg.bid.toString());
 });
 
 function displayHand() {
@@ -609,7 +595,6 @@ function taken(playerID, cardTaken, bidTaken) {
 
 socket.on('taken', function(msg) {
 	taken(msg.playerID, msg.card, msg.bid);
-	// display(msg.playerID + ' took ' + msg.card.toString() + ' and ' + msg.bid.toString() + ' moneys');
 });
 
 function passed(playerID) {
@@ -626,7 +611,6 @@ function passed(playerID) {
 
 socket.on('passed', function(msg) {
 	passed(msg.playerID);
-	// display(msg.playerID + ' passed ' + msg.card.toString());
 });
 
 function ended(msg) {
@@ -697,9 +681,5 @@ function ended(msg) {
 }
 
 socket.on('ended', function(msg) {
-	// console.log('Got that the game ended');
 	ended(msg);
-	// display('Game OVER!');
-	// display(msg.results);
-	// console.log(msg.results);
 });

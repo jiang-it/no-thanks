@@ -73,8 +73,6 @@ exports.initGame = function(io, gameSocket) {
     // createRoom is called when the player tries to create 
 	// a new game room. Generate a random code and return it back to the user
 	function createRoom(msg) {
-		// console.log('User ' + gameSocket.id + ' is trying to create a game');
-		
 		// Throws an error if
 			// User is already in a game
 		if (gameSocket.gameID) {
@@ -91,7 +89,6 @@ exports.initGame = function(io, gameSocket) {
 		// Create the room and attach it to our shared data structure
 		io.games[gameID] = {
 			gameID : gameID,
-			// TODO: password : false,
 			playerIDs : [gameSocket.id],
 			inProgress : false,
 			finished : false,
@@ -122,7 +119,6 @@ exports.initGame = function(io, gameSocket) {
 			problem('No gameID specified');
 			return;
 		}
-		// console.log('User ' + gameSocket.id + ' trying to join ' + msg.gameID);
 		
 		gameID = msg.gameID;
 		if (!io.games[gameID]) {
@@ -155,9 +151,8 @@ exports.initGame = function(io, gameSocket) {
 	}
     gameSocket.on('join', joinRoom);
 
-    // startGame is called when the user tries the game they are in
+    // startGame is called when the user tries starting the game they are in
 	function startGame(msg) {
-		// console.log('User ' + gameSocket.id + ' trying to start game');
 		// Figure out which game room the socket is currently in
 		gameID = gameSocket.gameID;
 		// Throw error if
@@ -238,7 +233,6 @@ exports.initGame = function(io, gameSocket) {
 			return;
 		}
 		if (!io.games[gameID]) {
-			// console.log('Game not found, abort abort');
 			problem('Server error in takeCard')
 			return;
 		}
@@ -311,7 +305,6 @@ exports.initGame = function(io, gameSocket) {
 
     // When the user passes a card
 	function passCard(msg) {
-		// console.log('User ' + gameSocket.id + ' trying to pass a card');
 		gameID = gameSocket.gameID;
 		// Throw an error if
 			// The user is not in a game
@@ -365,7 +358,6 @@ exports.initGame = function(io, gameSocket) {
     gameSocket.on('pass', passCard);
 	
 	function endGame(msg) {
-		// console.log('User ' + gameSocket.id + ' trying to end the game');
 		// Throw an error if
 			// The user is not in a game
 			// The game has not started
@@ -402,7 +394,6 @@ exports.initGame = function(io, gameSocket) {
     gameSocket.on('end', endGame);
 
 	function leaveGame(msg) {
-		// console.log('User ' + gameSocket.id + ' trying to leave the game room');
 		// Throw an error if 
 			// The user is not in a game
 			// The game is in progress
@@ -438,10 +429,7 @@ exports.initGame = function(io, gameSocket) {
 	}
     gameSocket.on('leave', leaveGame);
 
-	// MUST HANDLE ALL CASES
 	function disconnect() {
-		// console.log('User ' + gameSocket.id + ' has disconnected');
-
 		gameID = gameSocket.gameID;
 		if (!gameID) {
 			// If the user is not in a game, we don't have to do anything
@@ -451,8 +439,6 @@ exports.initGame = function(io, gameSocket) {
 			// That's buggy but not game breaking. 
 			// We have a gameID but its not recorded
 			// console.log('Game not found, abort abort');
-			// console.log(io.games);
-			// console.log('GameID not Found: ' + gameID.toString())
 			return;
 		}
 		if (io.games[gameID].finished) {
@@ -464,10 +450,8 @@ exports.initGame = function(io, gameSocket) {
 		}
 		if (io.games[gameID].inProgress) {
 			// Default to ending the game and displaying scores
-			// console.log(io.games);
 			_ = endGame();
 			_ = leaveGame();
-			// console.log(io.games);
 			return;
 		}
 		
@@ -508,13 +492,11 @@ function shuffleFullDeck() {
 
 function scoreHand(hand, moneys) {
 	hand.sort(function(a, b){return parseInt(a)-parseInt(b)});
-	// console.log(hand);
 	score = hand[0];
 	for (var i = 1; i < hand.length; i++) {
 		if (hand[i-1] != (hand[i] - 1)) {
 			score += hand[i];
 		}
 	}
-	// console.log(score);
 	return score - moneys;
 }
